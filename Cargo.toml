@@ -1,0 +1,7 @@
+[package]
+name = "markov-words"
+version = "0.1.0"
+authors = ["Jona Stubbe (CrystalGamma) <dev@jona-stubbe.de>"]
+
+[dependencies]
+rand = "*"
