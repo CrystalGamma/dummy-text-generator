@@ -86,6 +86,7 @@ fn main() {
 	let SPLIT_MIN_VISITS = args.get("min-visits").map(|s|s.parse().ok().expect("could not parse min-visits")).unwrap_or(4);
 	let SPLIT_MIN_REMAINING = args.get("min-remaining").map(|s|s.parse().ok().expect("could not parse min-remaining")).unwrap_or(SPLIT_MIN_VISITS);
 	let GO_BACK = args.has_arg("go-back");
+	let length = args.get("length").map(|s|s.parse().ok().expect("could not parse length")).unwrap_or(1000);
 	let mut text = String::new();
 	::std::io::stdin().read_to_string(&mut text).unwrap();
 	let iter = text.chars().map(|c|char2num(c.to_lowercase().next().unwrap()));
@@ -115,8 +116,8 @@ fn main() {
 //	for node in &graph {println!("{:?}", node);}
 	pos = 0;
 	let mut rng = ::rand::thread_rng();
-	for _ in 0..1000 {
 		let mut rand = ::rand::distributions::Range::new(0, graph[pos].visits).sample(&mut rng);
+	for _ in 0..length {
 		let table = &graph[pos].exits;
 		for (entry, c) in table.iter().zip(0..) {
 			if rand < entry.1 {
