@@ -33,7 +33,6 @@ impl Node {
 		let mut new_exits = self.exits.clone();
 		let mut errors = [0; 27];
 		let mut new_visits = 0;
-//		println!("splitting {} / {}", visits, self.visits);
 		debug_assert!(self.validate());
 		for pos in 0..27 {
 			let old_exit = self.exits[pos].1;
@@ -113,7 +112,6 @@ fn main() {
 		} else {target};
 	}
 	println!("num(nodes): {}", graph.len());
-//	for node in &graph {println!("{:?}", node);}
 	pos = 0;
 	let mut rng = ::rand::thread_rng();
 	for _ in 0..length {
