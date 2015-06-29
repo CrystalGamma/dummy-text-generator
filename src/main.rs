@@ -16,7 +16,7 @@ Copyright (C) 2015  Jona Stubbe
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 extern crate rand;
-use rand::distributions::Sample;
+use rand::Rng;
 
 extern crate pirate;
 
@@ -116,8 +116,8 @@ fn main() {
 //	for node in &graph {println!("{:?}", node);}
 	pos = 0;
 	let mut rng = ::rand::thread_rng();
-		let mut rand = ::rand::distributions::Range::new(0, graph[pos].visits).sample(&mut rng);
 	for _ in 0..length {
+		let mut rand = rng.gen_range(0, graph[pos].visits);
 		let table = &graph[pos].exits;
 		for (entry, c) in table.iter().zip(0..) {
 			if rand < entry.1 {
