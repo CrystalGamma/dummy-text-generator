@@ -5,3 +5,5 @@ authors = ["Jona Stubbe (CrystalGamma) <dev@jona-stubbe.de>"]
 
 [dependencies]
 rand = "*"
+pirate = "*"
+

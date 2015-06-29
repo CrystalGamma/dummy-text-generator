@@ -18,6 +18,8 @@ Copyright (C) 2015  Jona Stubbe
 extern crate rand;
 use rand::distributions::Sample;
 
+extern crate pirate;
+
 use std::io::prelude::*;
 
 #[derive(Debug)]
@@ -63,14 +65,7 @@ impl Node {
 	}
 }
 
-/// number of exits
 static START_VALUE: usize = 0;
-/// A node created by a split must have at least SPLIT_MIN_VISITS visits
-static SPLIT_MIN_VISITS: usize = 32;
-static SPLIT_MIN_REMAINING: usize = 32;
-static NORMALIZE_THRESHOLD: usize = 100000000;
-static NORMALIZE_DENOMINATOR: usize = 4;
-static GO_BACK:bool = false;
 
 fn char2num(c: char) -> usize {match c {
 	'a'...'z' => (c as usize) - ('a' as usize) + 1,
@@ -83,6 +78,14 @@ fn num2char(n: usize) -> char {match n {
 }}
 
 fn main() {
+	let args = pirate::parse(std::env::args(), &[
+		"s/min-visits:",
+		"r/min-remaining:",
+		"l/length:",
+		"go-back"]).unwrap();
+	let SPLIT_MIN_VISITS = args.get("min-visits").map(|s|s.parse().ok().expect("could not parse min-visits")).unwrap_or(4);
+	let SPLIT_MIN_REMAINING = args.get("min-remaining").map(|s|s.parse().ok().expect("could not parse min-remaining")).unwrap_or(SPLIT_MIN_VISITS);
+	let GO_BACK = args.has_arg("go-back");
 	let mut text = String::new();
 	::std::io::stdin().read_to_string(&mut text).unwrap();
 	let iter = text.chars().map(|c|char2num(c.to_lowercase().next().unwrap()));
@@ -91,24 +94,12 @@ fn main() {
 	for c in iter {
 		debug_assert!(pos < graph.len());
 		debug_assert!(graph[pos].validate());
-		if graph[pos].visits > NORMALIZE_THRESHOLD {
-			panic!("need to normalize");
-			for node in &mut graph {
-				let mut visits = 0;
-				for exit in &mut node.exits {
-					exit.1 = (exit.1 + (NORMALIZE_DENOMINATOR -1)) / NORMALIZE_DENOMINATOR;
-					visits += exit.1
-				}
-				node.visits = visits;
-			}
-		}
 		graph[pos].visits += 1;
 		graph[pos].exits[c].1 += 1;
 		if GO_BACK && c == 0 {
 			pos = 0;
 			continue;
 		}
-//		if c == 0 {println!("*");}
 		let (target, num_exits) = graph[pos].exits[c];
 		let target_visits = graph[target].visits;
 		pos = if num_exits > SPLIT_MIN_VISITS && target_visits + 1 - num_exits > SPLIT_MIN_REMAINING {
@@ -132,7 +123,7 @@ fn main() {
 				print!("{}", num2char(c));
 				rand = 0;
 				pos = entry.0;
-//				if c == 0 {pos=0;}
+				if GO_BACK && c == 0 {pos=0;}
 				break;
 			}
 			rand -= entry.1;
